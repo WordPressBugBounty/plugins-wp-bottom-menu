@@ -3,8 +3,8 @@ Contributors: j4cob, liquidthemes
 Donate link: 
 Tags: bottom menu,mobile menu
 Requires at least: 5.0
-Tested up to: 6.4.2
-Stable tag: 2.2.3
+Tested up to: 6.8.1
+Stable tag: 2.2.4
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -102,6 +102,10 @@ Go to the **Languages->Translations** select group as **WP Bottom Menu** and con
 
 
 == Changelog ==
+
+= 2.2.4 =
+* Fix - Settings page not redirection
+* New - Polylang link translate support
 
 = 2.2.3 =
 * Fix - JavaScript OnClick Menu item is not working.

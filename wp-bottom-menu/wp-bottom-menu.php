@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP Bottom Menu
  * Description: WP Bottom Menu allows you to add a woocommerce supported bottom menu to your site.
- * Version: 2.2.3
+ * Version: 2.2.4
  * Author: J4 & LiquidThemes
  * Author URI: https://hub.liquid-themes.com/
  * License: GPL v2 or later
@@ -23,7 +23,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-define( 'WP_BOTTOM_MENU_VERSION', '2.2.3' );
+define( 'WP_BOTTOM_MENU_VERSION', '2.2.4' );
 define( 'WP_BOTTOM_MENU_DIR_URL', plugin_dir_url( __FILE__ ) );
 define( 'WP_BOTTOM_MENU_DIR_PATH', plugin_dir_path( __FILE__ ) );
 
@@ -113,7 +113,7 @@ final class WPBottomMenu{
             add_submenu_page(
                 'options-general.php', 'WP Bottom Menu', 'WP Bottom Menu', 'manage_options', 'wp-bottom-menu',
                 function(){
-                    wp_redirect( admin_url( 'customize.php?autofocus[panel]=wpbottommenu_panel' ) );
+                    echo '<script>window.location.href = "' . admin_url( 'customize.php?autofocus[panel]=wpbottommenu_panel' ) . '";</script>';
                 }
             );
 		} );        
@@ -161,6 +161,7 @@ final class WPBottomMenu{
 
                 foreach ( $customizer_repeater_wpbm_decoded as $repeater_item ) {
                     pll_register_string( 'Menu Item', $repeater_item->title, 'WP Bottom Menu' );
+                    pll_register_string( 'Menu Link', $repeater_item->link, 'WP Bottom Menu' );
                 }
             }
         });
@@ -275,7 +276,7 @@ final class WPBottomMenu{
                             array_push( $classes, 'wpbm-page-back' );
                         break;
                         default:
-                            $wpbm_item_url = esc_url( $repeater_item->link );
+                            $wpbm_item_url = esc_url( $this->translated_menu_title($repeater_item->link) );
                     }
 
                     if ( url_to_postid($wpbm_item_url) === get_the_ID() ){
