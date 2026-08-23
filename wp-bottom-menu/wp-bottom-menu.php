@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP Bottom Menu
  * Description: WP Bottom Menu allows you to add a woocommerce supported bottom menu to your site.
- * Version: 2.2.4
+ * Version: 2.3.0
  * Author: J4 & LiquidThemes
  * Author URI: https://hub.liquid-themes.com/
  * License: GPL v2 or later
@@ -23,7 +23,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-define( 'WP_BOTTOM_MENU_VERSION', '2.2.4' );
+define( 'WP_BOTTOM_MENU_VERSION', '2.3.0' );
 define( 'WP_BOTTOM_MENU_DIR_URL', plugin_dir_url( __FILE__ ) );
 define( 'WP_BOTTOM_MENU_DIR_PATH', plugin_dir_path( __FILE__ ) );
 
@@ -113,7 +113,7 @@ final class WPBottomMenu{
             add_submenu_page(
                 'options-general.php', 'WP Bottom Menu', 'WP Bottom Menu', 'manage_options', 'wp-bottom-menu',
                 function(){
-                    echo '<script>window.location.href = "' . admin_url( 'customize.php?autofocus[panel]=wpbottommenu_panel' ) . '";</script>';
+                    echo '<script>window.location.href = "' . esc_url( admin_url( 'customize.php?autofocus[panel]=wpbottommenu_panel' ) ) . '";</script>';
                 }
             );
 		} );        
@@ -211,6 +211,22 @@ final class WPBottomMenu{
             return;
         }
 
+        $svg_allowed_tags = array(
+            'svg'  => array(
+                'xmlns' => true, 'width' => true, 'height' => true, 'viewbox' => true,
+                'fill' => true, 'stroke' => true, 'stroke-width' => true,
+                'stroke-linecap' => true, 'stroke-linejoin' => true, 'class' => true,
+            ),
+            'path' => array(
+                'd' => true, 'stroke' => true, 'fill' => true, 'stroke-width' => true,
+                'fill-rule' => true, 'clip-rule' => true,
+            ),
+            'span' => array(
+                'class' => true, 'data-tippy-content' => true, 'title' => true,
+            ),
+            'i'    => array( 'class' => true ),
+        );
+
         ?>
         <div class="wp-bottom-menu" id="wp-bottom-menu">
 
@@ -239,13 +255,13 @@ final class WPBottomMenu{
                     $search_icon = $repeater_item->subtitle;
                 }
             ?>
-                <<?php echo $tag; ?> title="<?php echo esc_attr( $repeater_item->title ); ?>" class="wp-bottom-menu-item wp-bottom-menu-search-form-trigger">
+                <<?php echo esc_attr( $tag ); ?> title="<?php echo esc_attr( $repeater_item->title ); ?>" class="wp-bottom-menu-item wp-bottom-menu-search-form-trigger">
             <?php elseif ( $repeater_item->choice == "wpbm-menu" ): ?>
                 <?php $tag = 'div'; ?>
-                <<?php echo $tag; ?> title="<?php echo esc_attr( $repeater_item->title ); ?>" class="wp-bottom-menu-item wp-bottom-menu-nav-trigger">
+                <<?php echo esc_attr( $tag ); ?> title="<?php echo esc_attr( $repeater_item->title ); ?>" class="wp-bottom-menu-item wp-bottom-menu-nav-trigger">
             <?php elseif ( $repeater_item->choice == "wpbm-onclick" ): ?>
                 <?php $tag = 'div'; ?>
-                <<?php echo $tag; ?> onclick="<?php echo $repeater_item->text; ?>" title="<?php echo esc_attr( $repeater_item->title ); ?>" class="wp-bottom-menu-item">
+                <<?php echo esc_attr( $tag ); ?> onclick="<?php echo esc_attr( $repeater_item->text ); ?>" title="<?php echo esc_attr( $repeater_item->title ); ?>" class="wp-bottom-menu-item">
             <?php else: ?>
                 <?php 
                     $wpbm_item_url = '';
@@ -288,7 +304,7 @@ final class WPBottomMenu{
                     }
                     
                 ?>
-                <<?php echo $tag; ?> href="<?php echo $wpbm_item_url; ?>" class="<?php echo esc_attr( join( ' ', $classes ) ); ?>" <?php echo esc_attr( $wpbm_link_target ); ?>>
+                <<?php echo esc_attr( $tag ); ?> href="<?php echo esc_url( $wpbm_item_url ); ?>" class="<?php echo esc_attr( join( ' ', $classes ) ); ?>" <?php echo esc_attr( $wpbm_link_target ); ?>>
             <?php endif; ?>
                     
                     <div class="wp-bottom-menu-icon-wrapper">
@@ -303,20 +319,20 @@ final class WPBottomMenu{
                         <?php elseif( get_option( 'wpbottommenu_iconset', 'fontawesome' ) == 'fontawesome2' ): ?>
                             <i class="wp-bottom-menu-item-icons <?php echo esc_attr( $repeater_item->subtitle ); ?>"></i>
                         <?php else: ?>
-                        <?php echo html_entity_decode( $repeater_item->subtitle ); ?>
+                        <?php echo wp_kses( html_entity_decode( $repeater_item->subtitle ), $svg_allowed_tags ); ?>
                         <?php endif; ?>
                     </div>
                     <?php if( !get_option( 'wpbottommenu_disable_title', false ) ): ?>
                         <?php if( get_option( 'wpbottommenu_show_cart_total', false ) && $repeater_item->choice == "wpbm-woo-cart" && class_exists( 'WooCommerce' ) ): ?>
                             <span class="wp-bottom-menu-cart-total"><?php WC()->cart->get_cart_total(); ?></span>
                         <?php elseif( get_option( 'wpbottommenu_show_account_name' ) && $repeater_item->choice == "wpbm-woo-account" && class_exists( 'WooCommerce' ) && is_user_logged_in() ): ?>
-                            <?php echo wp_get_current_user()->first_name ? wp_get_current_user()->first_name : wp_get_current_user()->user_login; ?>
+                            <?php echo esc_html( wp_get_current_user()->first_name ? wp_get_current_user()->first_name : wp_get_current_user()->user_login ); ?>
                         <?php else: ?>
-                            <span><?php echo $this->translated_menu_title($repeater_item->title); ?></span>
+                            <span><?php echo esc_html( $this->translated_menu_title($repeater_item->title) ); ?></span>
                         <?php endif; ?>
                     <?php endif; ?>
                     
-                </<?php echo $tag; ?>>
+                </<?php echo esc_attr( $tag ); ?>>
             <?php
 
             if ( $repeater_item->choice == "wpbm-woo-search" && !$wpbm_woo_search )
@@ -341,7 +357,7 @@ final class WPBottomMenu{
             <?php 
                 if ( has_nav_menu( 'wpbm_custom' ) ) {
                     wp_nav_menu( array(
-                        'menu'           => 'wpbm_custom',
+                        'theme_location' => 'wpbm_custom',
                         'container'      => 'ul',
                         'menu_id'        => 'wpbm-nav',
                         'menu_class'     => 'wpbm-nav-items',
@@ -357,7 +373,7 @@ final class WPBottomMenu{
         <div class="wp-bottom-menu-search-form-wrapper" id="wp-bottom-menu-search-form-wrapper">
         <form role="search" method="get" action="<?php echo esc_url( home_url( '/'  ) ); ?>" class="wp-bottom-menu-search-form">
             <?php if ( get_option( 'wpbottommenu_iconset', 'fontawesome' ) == 'svg' ) : ?>
-                <?php echo html_entity_decode( $search_icon ); ?>
+                <?php echo wp_kses( html_entity_decode( $search_icon ), $svg_allowed_tags ); ?>
             <?php else : ?>
                 <i class="<?php echo esc_attr( $search_icon ); ?>"></i>
             <?php endif; ?>
@@ -378,7 +394,7 @@ final class WPBottomMenu{
                     }
                 }
             } ?>
-            <input type="search" class="search-field" placeholder="<?php if( get_option( 'wpbottommenu_placeholder_text', 'Search' ) ) echo get_option( 'wpbottommenu_placeholder_text', 'Search' ); else echo esc_attr_x( 'Search', 'wp-bottom-menu' ); ?>" value="<?php echo get_search_query(); ?>" name="s" />
+            <input type="search" class="search-field" placeholder="<?php if( get_option( 'wpbottommenu_placeholder_text', 'Search' ) ) echo esc_attr( get_option( 'wpbottommenu_placeholder_text', 'Search' ) ); else echo esc_attr_x( 'Search', 'placeholder', 'wp-bottom-menu' ); ?>" value="<?php echo get_search_query(); ?>" name="s" />
         </form>
         </div>
     <?php endif;

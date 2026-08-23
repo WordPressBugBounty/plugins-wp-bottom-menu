@@ -3,8 +3,8 @@ Contributors: j4cob, liquidthemes
 Donate link: 
 Tags: bottom menu,mobile menu
 Requires at least: 5.0
-Tested up to: 6.8.1
-Stable tag: 2.2.4
+Tested up to: 7.1
+Stable tag: 2.3.0
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -102,6 +102,14 @@ Go to the **Languages->Translations** select group as **WP Bottom Menu** and con
 
 
 == Changelog ==
+
+= 2.3.0 =
+* Fix - All Plugin Check errors resolved (escaping, i18n, direct access protection)
+* Fix - Output escaping for customizer repeater controls
+* Fix - Added missing text domains to all translation functions
+* Fix - Added translators comments for placeholder strings
+* Fix - Added direct file access protection to included PHP files
+* Fix - Updated Tested up to 7.1
 
 = 2.2.4 =
 * Fix - Settings page not redirection
